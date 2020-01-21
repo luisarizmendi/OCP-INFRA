@@ -1,0 +1,45 @@
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    tags: clustermetering
+  name: clustermetering
+objects:
+#########################################
+## CREATE NAMESPACE
+#########################################
+- kind: Namespace
+  apiVersion: v1
+  metadata:
+    name: "${NAMESPACE_METERING}"
+    labels:
+      openshift.io/cluster-monitoring: "true"
+- kind: OperatorGroup
+  apiVersion: operators.coreos.com/v1
+  metadata:
+    generateName: openshift-metering-
+    namespace: "${NAMESPACE_METERING}"
+  spec:
+    targetNamespaces:
+    - openshift-metering
+- kind: Subscription
+  apiVersion: operators.coreos.com/v1alpha1
+  metadata:
+    name: "metering-ocp"
+    namespace: "${NAMESPACE_METERING}"
+  spec:
+    channel: "${CHANNEL_METERING}"
+    installPlanApproval: "Automatic"
+    source: "redhat-operators"
+    sourceNamespace: "openshift-marketplace"
+    name: "metering-ocp"
+parameters:
+  - name: CHANNEL_METERING
+    displayName: Channel Metering
+    description: Channel for the Metering Operator
+    required: true
+  - name: NAMESPACE_METERING
+    displayName: Namespace for Metering
+    description: Namespace for Metering
+    required: true
+    value: "openshift-metering"

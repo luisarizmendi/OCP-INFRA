@@ -1,0 +1,3 @@
+NAME=etherpad
+ADMIN_PASSWORD=redhat
+DB_HOST=ether-mysql

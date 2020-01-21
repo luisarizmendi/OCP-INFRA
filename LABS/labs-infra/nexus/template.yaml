@@ -1,0 +1,36 @@
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    tags: nexus
+  name: nexus
+objects:
+- kind: OperatorGroup
+  apiVersion: operators.coreos.com/v1
+  metadata:
+    name: "${NAMESPACE_NEXUS}"
+    namespace: "${NAMESPACE_NEXUS}"
+  spec:
+    targetNamespaces:
+    - "${NAMESPACE_NEXUS}"
+- kind: Subscription
+  apiVersion: operators.coreos.com/v1alpha1
+  metadata:
+    name: nexus
+    namespace: "${NAMESPACE_NEXUS}"
+  spec:
+    channel: ${CHANNEL_NEXUS}
+    installPlanApproval: Automatic
+    name: nexus-operator-hub
+    source: community-operators
+    sourceNamespace: openshift-marketplace
+parameters:
+  - name: CHANNEL_NEXUS
+    displayName: Channel Nexus
+    description: Channel for the Nexus Operator
+    required: true
+  - name: NAMESPACE_NEXUS
+    displayName: Namespace for Nexus
+    description: Namespace for Nexus
+    required: true
+    value: "labs-infra"

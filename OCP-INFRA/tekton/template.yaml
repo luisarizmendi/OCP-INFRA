@@ -1,0 +1,22 @@
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    tags: pipelines
+  name: pipelines
+objects:
+- apiVersion: operators.coreos.com/v1alpha1
+  kind: Subscription
+  metadata:
+    name: openshift-pipelines-operator
+    namespace: openshift-operators
+  spec:
+    channel: ${CHANNEL_TEKTON}
+    name: openshift-pipelines-operator
+    source: community-operators
+    sourceNamespace: openshift-marketplace
+parameters:
+  - name: CHANNEL_TEKTON
+    displayName: Channel Nexus
+    description: Channel for the Nexus Operator
+    required: true

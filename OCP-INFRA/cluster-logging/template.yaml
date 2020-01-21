@@ -1,0 +1,123 @@
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    tags: clusterlogging
+  name: clusterlogging
+objects:
+#########################################
+## CREATE NAMESPACES
+#########################################
+- kind: Namespace
+  apiVersion: v1
+  metadata:
+    name: "${NAMESPACE_ELASTICSEARCH}"
+    annotations:
+      openshift.io/node-selector: ""
+    labels:
+      openshift.io/cluster-logging: "true"
+      openshift.io/cluster-monitoring: "true"
+- kind: Namespace
+  apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: "${NAMESPACE_LOGGING}"
+    annotations:
+      openshift.io/node-selector: ""
+    labels:
+      openshift.io/cluster-logging: "true"
+      openshift.io/cluster-monitoring: "true"
+#########################################
+## GRANT PROMETHEUS PERMISSION TO ACCESS openshift-operators-redhat
+#########################################
+- kind: Role
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: prometheus-k8s
+    namespace: "${NAMESPACE_ELASTICSEARCH}"
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+- kind: RoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: prometheus-k8s
+    namespace: "${NAMESPACE_ELASTICSEARCH}"
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: prometheus-k8s
+  subjects:
+  - kind: ServiceAccount
+    name: prometheus-k8s
+    namespace: "${NAMESPACE_ELASTICSEARCH}"
+#########################################
+## INSTALL ELASTICSEARCH
+#########################################
+- kind: OperatorGroup
+  apiVersion: operators.coreos.com/v1
+  metadata:
+    name: openshift-operators-redhat
+    namespace: "${NAMESPACE_ELASTICSEARCH}"
+  spec: {}
+- kind: Subscription
+  apiVersion: operators.coreos.com/v1alpha1
+  metadata:
+    generateName: "elasticsearch-"
+    namespace: "${NAMESPACE_ELASTICSEARCH}"
+  spec:
+    channel: "${CHANNEL_ELASTICSEARCH}"
+    installPlanApproval: "Automatic"
+    source: "redhat-operators"
+    sourceNamespace: "openshift-marketplace"
+    name: "elasticsearch-operator"
+#########################################
+## INSTALL CLUSTER LOGGING OPERATOR
+#########################################
+- kind: OperatorGroup
+  apiVersion: operators.coreos.com/v1
+  metadata:
+    generateName: openshift-logging-
+    namespace: "${NAMESPACE_LOGGING}"
+  spec:
+    targetNamespaces:
+    - openshift-logging
+- kind: Subscription
+  apiVersion: operators.coreos.com/v1alpha1
+  metadata:
+    name: "cluster-logging"
+    namespace: "${NAMESPACE_LOGGING}"
+  spec:
+    channel: "${CHANNEL_LOGGING}"
+    installPlanApproval: "Automatic"
+    source: "redhat-operators"
+    sourceNamespace: "openshift-marketplace"
+    name: "cluster-logging"
+parameters:
+  - name: CHANNEL_LOGGING
+    displayName: Channel Logging
+    description: Channel for the Logging Operator
+    required: true
+    #CHANNEL_ELASTICSEARCH=$(/usr/local/bin/oc get packagemanifest elasticsearch-operator -n openshift-marketplace -o jsonpath='{.status.channels[].name}')
+  - name: CHANNEL_ELASTICSEARCH
+    displayName: Channel Elasticsearch
+    description: Channel for the Elasticsearch Operator
+    required: true
+  - name: NAMESPACE_LOGGING
+    displayName: Namespace for logging
+    description: Namespace for logging
+    required: true
+    value: "openshift-logging"
+  - name: NAMESPACE_ELASTICSEARCH
+    displayName: Namespace for Elasticsearch
+    description: Namespace for Elasticsearch
+    required: true
+    value: "openshift-operators-redhat"

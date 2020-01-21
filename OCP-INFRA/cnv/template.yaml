@@ -1,0 +1,46 @@
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    tags: cnv
+  name: cnv
+objects:
+#########################################
+## CREATE NAMESPACE
+#########################################
+- kind: Namespace
+  apiVersion: v1
+  metadata:
+    name: "${NAMESPACE_CNV}"
+#########################################
+## INSTALL OPERATOR
+#########################################
+- kind: OperatorGroup
+  apiVersion: operators.coreos.com/v1
+  metadata:
+    generateName: openshift-cnv-
+    namespace: "${NAMESPACE_CNV}"
+  spec:
+    targetNamespaces:
+    - openshift-cnv
+- kind: Subscription
+  apiVersion: operators.coreos.com/v1alpha1
+  metadata:
+    name: kubevirt-hyperconverged
+    namespace: "${NAMESPACE_CNV}"
+  spec:
+    channel: "${CHANNEL_CNV}"
+    installPlanApproval: Automatic
+    name: kubevirt-hyperconverged
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+parameters:
+  - name: CHANNEL_CNV
+    displayName: Channel CNV
+    description: Channel for the CNV Operator
+    required: true
+  - name: NAMESPACE_CNV
+    displayName: Namespace for CNV
+    description: Namespace for CNV
+    required: true
+    value: "openshift-cnv"

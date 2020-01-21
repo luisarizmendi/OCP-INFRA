@@ -1,0 +1,127 @@
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    tags: clustermetering
+  name: clustermetering2
+objects:
+#########################################
+## INSTALL METERING STACK
+#########################################
+- kind: MeteringConfig
+  apiVersion: metering.openshift.io/v1
+  metadata:
+    name: "operator-metering"
+    namespace: "${NAMESPACE_METERING}"
+  spec:
+    reporting-operator:
+      spec:
+        resources:
+          limits:
+            cpu: 1
+            memory: 500Mi
+          requests:
+            cpu: 500m
+            memory: 100Mi
+    presto:
+      spec:
+        coordinator:
+          resources:
+            limits:
+              cpu: 4
+              memory: 4Gi
+            requests:
+              cpu: 2
+              memory: 2Gi
+
+        worker:
+          replicas: 1
+          resources:
+            limits:
+              cpu: 4
+              memory: 8Gi
+            requests:
+              cpu: 2
+              memory: 2Gi
+
+    hive:
+      spec:
+        metastore:
+          resources:
+            limits:
+              cpu: 4
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 650Mi
+          storage:
+            class: ${STORAGECLASS}
+            create: true
+            size: 5Gi
+        server:
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+            requests:
+              cpu: 500m
+              memory: 500Mi
+
+    storage:
+      type: "hive"
+      hive:
+        type: "sharedPVC"
+        sharedPVC:
+          #claimName: "metering-nfs"
+          # uncomment the lines below to provision a new PVC using the specified 2
+          # storageClass.
+          createPVC: true
+          storageClass: ${STORAGECLASS}
+          size: 5Gi
+#########################################
+## CONFIGURE REPORTS
+#########################################
+- kind: Report
+  apiVersion: metering.openshift.io/v1
+  metadata:
+    name: pod-cpu-request-hourly
+    namespace: "${NAMESPACE_METERING}"
+  spec:
+    query: "pod-cpu-request"
+  #  reportingStart: "2019-07-01T00:00:00Z"
+    schedule:
+      period: "hourly"
+      hourly:
+        minute: 0
+        second: 0
+- kind: Report
+  apiVersion: metering.openshift.io/v1
+  metadata:
+    name: cluster-cpu-capacity-hourly
+    namespace: "${NAMESPACE_METERING}"
+  spec:
+    query: "cluster-cpu-capacity"
+    schedule:
+      period: "hourly"
+- kind: Report
+  apiVersion: metering.openshift.io/v1
+  metadata:
+    name: cluster-cpu-capacity-daily
+    namespace: "${NAMESPACE_METERING}"
+  spec:
+    query: "cluster-cpu-capacity"
+    inputs:
+    - name: ClusterCpuCapacityReportName
+      value: cluster-cpu-capacity-hourly
+    schedule:
+      period: "daily"
+parameters:
+  - name: STORAGECLASS
+    displayName: Storage Class
+    description: Storage Class to be used
+    required: true
+  - name: NAMESPACE_METERING
+    displayName: Namespace for Metering
+    description: Namespace for Metering
+    required: true
+    value: "openshift-metering"

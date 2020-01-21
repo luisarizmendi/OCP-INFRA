@@ -1,0 +1,47 @@
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    tags: clusterlogging
+  name: clusterlogging2
+objects:
+#########################################
+## INSTALL CLUSTER LOGGING INSTANCE
+#########################################
+- kind: "ClusterLogging"
+  apiVersion: "logging.openshift.io/v1"
+  metadata:
+    name: "instance"
+    namespace: "${NAMESPACE_LOGGING}"
+  spec:
+    managementState: "Managed"
+    logStore:
+      type: "elasticsearch"
+      elasticsearch:
+        nodeCount: 3
+        storage:
+          storageClassName: ${STORAGECLASS}
+          size: 200G
+        redundancyPolicy: "SingleRedundancy"
+    visualization:
+      type: "kibana"
+      kibana:
+        replicas: 1
+    curation:
+      type: "curator"
+      curator:
+        schedule: "30 3 * * *"
+    collection:
+      logs:
+        type: "fluentd"
+        fluentd: {}
+parameters:
+  - name: STORAGECLASS
+    displayName: Storage Class
+    description: Storage Class to be used
+    required: true
+  - name: NAMESPACE_LOGGING
+    displayName: Namespace for logging
+    description: Namespace for logging
+    required: true
+    value: "openshift-logging"

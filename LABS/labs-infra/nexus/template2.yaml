@@ -1,0 +1,37 @@
+
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    tags: nexus
+  name: nexus2
+objects:
+- kind: Nexus
+  apiVersion: apps.m88i.io/v1alpha1
+  metadata:
+    creationTimestamp: "2020-01-08T15:08:32Z"
+    generation: 4
+    name: nexus3
+    namespace: "${NAMESPACE_NEXUS}"
+  spec:
+    image: docker.io/sonatype/nexus3:latest
+    networking:
+      expose: true
+      exposeAs: Route
+    persistence:
+      persistent: true
+      volumeSize: 10Gi
+    replicas: 1
+    resources:
+      limits:
+        cpu: "2"
+        memory: 2Gi
+      requests:
+        cpu: "1"
+        memory: 2Gi
+parameters:
+  - name: NAMESPACE_NEXUS
+    displayName: Namespace for Nexus
+    description: Namespace for Nexus
+    required: true
+    value: "labs-infra"

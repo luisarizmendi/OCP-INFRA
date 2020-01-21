@@ -1,0 +1,5 @@
+HOSTNAME="gogs.apps.baremetalocp.ocp.lablocal"
+APPLICATION_NAME=gogs
+GOGS_VERSION=0.11.34
+SKIP_TLS_VERIFY=true
+DATABASE_VERSION=10
