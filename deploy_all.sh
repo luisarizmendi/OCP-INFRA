@@ -51,6 +51,9 @@ cd service-mesh   ; chmod +x run.sh ; ./run.sh ; cd ..
 
 
 
+echo "Configure Knative"
+cd knative   ; chmod +x run.sh ; ./run.sh ; cd ..
+
 
 echo "Configure Code Ready Workspaces"
 cd workspaces   ; chmod +x run.sh ; ./run.sh ; cd ..
