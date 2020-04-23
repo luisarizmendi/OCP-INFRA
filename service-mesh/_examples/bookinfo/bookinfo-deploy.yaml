@@ -226,6 +226,7 @@ spec:
       annotations:
         sidecar.istio.io/inject: "true"
       labels:
+        maistra.io/expose-route: "true"
         app: productpage
         version: v1
     spec:
@@ -245,7 +246,7 @@ metadata:
     service: productpage
   name: productpage
 spec:
-  host: ${APPHOSTNAME}
+  host: ${APP_SUBDOMAIN}
   port:
     targetPort: http
   to:

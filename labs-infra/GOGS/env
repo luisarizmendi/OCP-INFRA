@@ -1,4 +1,4 @@
-HOSTNAME="gogs.apps.baremetalocp.ocp.lablocal"
+HOSTNAME="gogs.apps.ocp.136.243.40.222.nip.io"
 APPLICATION_NAME=gogs
 GOGS_VERSION=0.11.34
 SKIP_TLS_VERIFY=true

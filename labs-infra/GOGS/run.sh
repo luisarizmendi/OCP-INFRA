@@ -1,5 +1,5 @@
 #!/bin/bash
-GOGS_PWD=redhat
+GOGS_PWD=R3dhat01
 USERCOUNT=25
 
 #git clone https://github.com/OpenShiftDemos/gogs-openshift-docker

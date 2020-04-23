@@ -19,7 +19,7 @@ metadata:
   name: bookinfo
 spec:
   hosts:
-  - "${APPHOSTNAME}"
+  - ${APP_SUBDOMAIN}
   gateways:
   - bookinfo-gateway
   http:

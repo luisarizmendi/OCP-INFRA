@@ -1,7 +1,7 @@
 #!/bin/bash
 
 USERCOUNT=25
-GOGS_PWD=redhat
+GOGS_PWD=R3dhat01
 
 
 

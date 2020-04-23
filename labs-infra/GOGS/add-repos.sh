@@ -27,7 +27,7 @@ do
 done
 
 USERCOUNT=25
-GOGS_PWD=redhat
+GOGS_PWD=R3dhat01
 
 #CLONE_ADDR=https://github.com/RedHat-Middleware-Workshops/cloud-native-workshop-v2m$MODULE_NO-labs.git
 #REPO_NAME=cloud-native-workshop-v2m$MODULE_NO-labs

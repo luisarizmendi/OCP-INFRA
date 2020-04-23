@@ -44,8 +44,8 @@ cd ..
 
 
 
-echo "Installing Red Hat Application Migration Tool..."
-cd RHAMT
-chmod +x run.sh
-./run.sh
-cd ..
+#echo "Installing Red Hat Application Migration Tool..."
+#cd RHAMT
+#chmod +x run.sh
+#./run.sh
+#cd ..

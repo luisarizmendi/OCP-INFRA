@@ -6,6 +6,8 @@ echo "Configure authentication"
 cd authentication/  ; chmod +x run.sh ; ./run.sh ; cd ..
 
 
+#echo "Configure Registry storage"
+#cd nfs-registry/  ; chmod +x run.sh ; ./run.sh ; cd ..
 
 
 echo "Configure NFS autoprovisioner (not supported, only for PoC)"
