@@ -40,7 +40,6 @@ oc apply -f destination-rule-all.yaml
 
 sleep 15
 
-set -x
 #############################################
 # WAITING POD TO BE UP
 #############################################

@@ -1,7 +1,12 @@
 #!/bin/bash
 
 
-
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
 echo "*********************************************************************************"
 echo "                                   Only v1"
 echo "*********************************************************************************"
@@ -10,10 +15,16 @@ echo "100% of requests go to v1 (no stars)"
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-all-v1.yaml
-
-
+echo ""
+read -p "Done!, Press enter to continue with the next test"
+oc delete -f networking/virtual-service-all-v1.yaml
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
 echo "*********************************************************************************"
 echo "                                   Route 80/20"
 echo "*********************************************************************************"
@@ -22,13 +33,18 @@ echo "80% of requests go to v1 (no stars) and 20% to v2 (black stars) "
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-reviews-80-20.yaml
-
+echo ""
 echo ""
 read -p "Done!, Press enter to continue with the next test"
+oc delete -f networking/virtual-service-reviews-80-20.yaml
 echo ""
-
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
 echo "*********************************************************************************"
 echo "                          Route based on user identity"
 echo "*********************************************************************************"
@@ -37,14 +53,19 @@ echo "User jason will get stars in the ratings (v2). All other user don't see th
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-reviews-test-v2.yaml
-
+echo ""
 echo ""
 read -p "Done!, Press enter to continue with the next test"
+oc delete -f networking/virtual-service-reviews-test-v2.yaml
 echo ""
 
-
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
 echo "*********************************************************************************"
 echo "                          Injecting an HTTP delay fault"
 echo "*********************************************************************************"
@@ -59,15 +80,20 @@ echo "retry for 6s total."
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-ratings-test-delay.yaml
-
+echo ""
 echo ""
 read -p "Done!, Press enter to continue with the next test"
+oc delete -f networking/virtual-service-ratings-test-delay.yaml
 echo ""
 
 
-
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
 echo "*********************************************************************************"
 echo "                          Injecting an HTTP abort fault"
 echo "*********************************************************************************"
@@ -76,17 +102,22 @@ echo "Introduce an HTTP abort to the ratings microservices for the test user jas
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-ratings-test-abort.yaml
-
+echo ""
 echo ""
 read -p "Done!, Press enter to continue with the next test"
+oc delete -f networking/virtual-service-ratings-test-abort.yaml
 echo ""
 
 
 
 
-
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
+echo ""
 echo "*********************************************************************************"
 echo "                               Request timeouts"
 echo "*********************************************************************************"
@@ -130,7 +161,8 @@ spec:
         host: ratings
         subset: v1
 EOF
-
+echo ""
+echo ""
 echo ""
 echo "Now you have a Route requests to v2 of the reviews service and a 2 second delay"
 echo "to calls to the ratings service. Bookinfo application working normally."
@@ -162,10 +194,12 @@ echo ""
 
 
 
+oc delete virtualservices.networking.istio.io reviews
+oc delete virtualservices.networking.istio.io ratings
 
 
 
-oc apply -f networking/destination-rule-all.yaml
+oc apply -f destination-rule-all.yaml
 
 
 
