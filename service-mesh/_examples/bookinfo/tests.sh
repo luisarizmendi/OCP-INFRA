@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 echo "*********************************************************************************"
 echo "                                   Only v1"
 echo "*********************************************************************************"
@@ -8,6 +10,7 @@ echo "100% of requests go to v1 (no stars)"
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
+oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-all-v1.yaml
 
 
@@ -19,7 +22,7 @@ echo "80% of requests go to v1 (no stars) and 20% to v2 (black stars) "
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-
+oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-reviews-80-20.yaml
 
 echo ""
@@ -34,7 +37,7 @@ echo "User jason will get stars in the ratings (v2). All other user don't see th
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-
+oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-reviews-test-v2.yaml
 
 echo ""
@@ -56,7 +59,7 @@ echo "retry for 6s total."
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-
+oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-ratings-test-delay.yaml
 
 echo ""
@@ -73,7 +76,7 @@ echo "Introduce an HTTP abort to the ratings microservices for the test user jas
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-
+oc apply -f networking/destination-rule-all.yaml
 oc apply -f networking/virtual-service-ratings-test-abort.yaml
 
 echo ""
@@ -93,7 +96,7 @@ echo "also introduce an artificial 2 second delay in calls to the ratings servic
 echo ""
 read -p "                       PRESS ENTER TO CONFIGURE IT"
 echo ""
-
+oc apply -f networking/destination-rule-all.yaml
 oc apply -f - <<EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -162,6 +165,7 @@ echo ""
 
 
 
+oc apply -f networking/destination-rule-all.yaml
 
 
 

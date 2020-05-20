@@ -1,6 +1,6 @@
 #!/bin/bash
-DOMAIN="apps$(oc whoami --show-console | awk -F "apps" '{print $2}')"
-SUBDOMAIN="$(oc project | awk -F \" '{print $2}').${DOMAIN}"
+#DOMAIN="apps$(oc whoami --show-console | awk -F "apps" '{print $2}')"
+#SUBDOMAIN="$(oc project | awk -F \" '{print $2}').${DOMAIN}"
 
 
 # based on:
@@ -21,24 +21,32 @@ oc project lab-servicemesh
 
 ### DEPLOY ########################
 
-cat bookinfo-deploy.yaml | APP_SUBDOMAIN=productpage-$(echo $SUBDOMAIN) envsubst | oc apply -f -
+#cat bookinfo-deploy.yaml | APP_SUBDOMAIN=productpage-$(echo $SUBDOMAIN) envsubst | oc apply -f -
+oc apply -f bookinfo-deploy.yaml
+
 
 sleep 5
 
-cat bookinfo-gateway.yaml | APP_SUBDOMAIN=productpage-$(echo $SUBDOMAIN) envsubst | oc apply -f -
+#cat bookinfo-gateway.yaml | APP_SUBDOMAIN=productpage-$(echo $SUBDOMAIN) envsubst | oc apply -f -
+oc apply -f bookinfo-gateway.yaml
 
+
+
+
+export GATEWAY_URL=$(oc -n istio-system get route istio-ingressgateway -o jsonpath='{.spec.host}')
 
 
 oc apply -f destination-rule-all.yaml
 
-sleep 10
+sleep 15
 
+set -x
 #############################################
 # WAITING POD TO BE UP
 #############################################
-DEPLOYMENTS=$(oc get deployment -o name)
+DEPLOYMENTS=$(oc get deployment -n  lab-servicemesh  -o name)
 echo ""
-echo "Waiting the PODs to be ready -n"
+echo "Waiting the PODs to be ready"
 for DEPLOYMENT_NAME in $DEPLOYMENTS; do
     DEPLOYMENT_STATUS=$(oc get $DEPLOYMENT_NAME | grep $(echo $DEPLOYMENT_NAME | awk -F \/ '{print $2}')  | awk '{print $2}')
     DEPLOYMENT_STATUS_1=$(echo $DEPLOYMENT_STATUS | awk -F \/ '{print $1}')
@@ -53,6 +61,5 @@ for DEPLOYMENT_NAME in $DEPLOYMENTS; do
 done
 #############################################
 
-export GATEWAY_URL=$(oc get route productpage -o jsonpath='{.spec.host}')
 echo "Try to connect to http://$GATEWAY_URL/productpage"
 ## IN ORDER TO GET ONLY THE HTTP CODE:   curl -o /dev/null -s -w "%{http_code}\n" http://$GATEWAY_URL/productpage
