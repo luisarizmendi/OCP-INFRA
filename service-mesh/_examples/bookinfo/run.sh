@@ -8,7 +8,7 @@
 #     https://github.com/istio/istio/tree/master/samples/bookinfo
 #
 
-oc project lab-servicemesh
+#oc project lab-servicemesh
 
 # If you want to use any other project, remember to include it into the istio memeberroll:
 #  $ oc -n <control plane project> patch --type='json' smmr default -p '[{"op": "add", "path": "/spec/members", "value":["'"bookinfo"'"]}]'
@@ -22,18 +22,72 @@ oc project lab-servicemesh
 ### DEPLOY ########################
 
 #cat bookinfo-deploy.yaml | APP_SUBDOMAIN=productpage-$(echo $SUBDOMAIN) envsubst | oc apply -f -
+
+my_project=$(oc project | awk -F \" '{print $2}')
+
+my_appsdomain="apps.$(oc project | awk -F "https://api." '{print $2}' | awk -F : '{print $1}')"
+
+
 oc apply -f bookinfo-deploy.yaml
+
+
+#cat bookinfo-gateway.yaml | APP_SUBDOMAIN=productpage-$(echo $SUBDOMAIN) envsubst | oc apply -f -
+#oc apply -f bookinfo-gateway.yaml
+
+oc create -f - <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: bookinfo-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "bookinfo.${my_appsdomain}"
+EOF
+
 
 
 sleep 5
 
-#cat bookinfo-gateway.yaml | APP_SUBDOMAIN=productpage-$(echo $SUBDOMAIN) envsubst | oc apply -f -
-oc apply -f bookinfo-gateway.yaml
+
+oc create -f - <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo-vs
+spec:
+  hosts:
+  - "bookinfo.${my_appsdomain}"
+  gateways:
+  - bookinfo-gateway
+  http:
+  - match:
+    - uri:
+        exact: /productpage
+    - uri:
+        prefix: /static
+    - uri:
+        exact: /login
+    - uri:
+        exact: /logout
+    - uri:
+        prefix: /api/v1/products
+    route:
+    - destination:
+        host: productpage
+        port:
+          number: 9080
+EOF
 
 
 
-
-export GATEWAY_URL=$(oc -n istio-system get route istio-ingressgateway -o jsonpath='{.spec.host}')
+export GATEWAY_URL="bookinfo.${my_appsdomain}"
 
 
 oc apply -f destination-rule-all.yaml
